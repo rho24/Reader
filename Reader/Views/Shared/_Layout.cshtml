@@ -1,16 +1,52 @@
 ﻿<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-</head>
-<body>
-    @RenderBody()
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Reader - @ViewBag.Title</title>
+        @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/bootstrap")
+        @Scripts.Render("~/bundles/modernizr")
+    </head>
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top top-navbar">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button class="btn btn-navbar" type="button" data-target=".nav-collapse" data-toggle="collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="#">Reader</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li class="active"><a href="#">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="container-fluid viewport">
+            @RenderBody()
+        </div>
+    
 
-    @Scripts.Render("~/bundles/jquery")
-    @RenderSection("scripts", required: false)
-</body>
+        <div class="navbar navbar-fixed-bottom bottom-navbar">
+            <div class="navbar-inner">
+                <div class="container">
+                    Footer
+                </div>
+            </div>
+        </div>
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/site")
+        @Scripts.Render("~/bundles/knockout")
+        @RenderSection("scripts", required: false)
+    </body>
 </html>

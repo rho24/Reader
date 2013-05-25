@@ -15,6 +15,5 @@ namespace Reader.Controllers
         {
             return View();
         }
-
     }
 }

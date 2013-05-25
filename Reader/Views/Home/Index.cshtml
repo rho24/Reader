@@ -4,4 +4,94 @@
     ViewBag.Title = "title";
 }
 
-<h2>title</h2>
+<div class="row-fluid fill">
+    <div class="span3 well sidebar">
+        <!--Sidebar content-->
+        <ul class="nav nav-list">
+            <li class="nav-header">Feeds</li>
+            
+            <!-- ko template: { name: 'feed-template', foreach: feeds } --><!-- /ko -->
+        </ul>
+    </div>
+    <div class="span9 well body fill">
+        <!--Body content-->
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-header" databind="text: selectedFeed.name"></li>
+            <!-- ko foreach: selectedFeed.posts -->
+            <li><a href="#" data-bind="text: name"></a></li>
+            <!-- /ko -->
+        </ul>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+        ko.trackDeep = function(obj, propertyNames) {
+            propertyNames = propertyNames || Object.getOwnPropertyNames(obj);
+
+            propertyNames.forEach(function(propertyName) {
+                if (obj[propertyName] !== undefined)
+                    ko.trackDeep(obj[propertyName], propertyNames);
+            });
+
+            if (obj instanceof Array) {
+                obj.forEach(function (item) {
+                    ko.trackDeep(item, propertyNames);
+                });
+            }
+            else
+                ko.track(obj);
+        };
+
+        $(function() {
+            var model = {
+                feeds: [
+                    {
+                        isGroup: true,
+                        name: 'Forums',
+                        nodes: [{ name: 'Glimpse' },
+                            { name: 'Autofac' },
+                            { name: 'RavenDb' }]
+                    },
+                    { name: 'Hanselman' },
+                    { name: 'Haacked' },
+                    { name: 'ScottGu' }
+                ],
+                selectedFeed: {
+                    name: 'Haacked',
+                    posts: [
+                        { name: 'Post 1 - This is a wonderful post' },
+                        { name: 'Post 2 - This is a wonderful post' },
+                        { name: 'Post 3 - This is a wonderful post' },
+                        { name: 'Post 4 - This is a wonderful post' },
+                        { name: 'Post 5 - This is a wonderful post' },
+                        { name: 'Post 6 - This is a wonderful post' }]
+                }
+            };
+
+            ko.trackDeep(model);
+
+            ko.applyBindings(model);
+
+            window.viewModel = model;
+        });
+
+    </script>
+    
+    <script type="text/html" id="feed-template">
+        <!-- ko if: $data.isGroup -->
+        <li>
+            <ul class="nav nav-list">
+                <li class="nav-header" data-bind="text: name"></li>
+                <!-- ko template: { name: 'feed-template', foreach: nodes } -->
+                <!-- /ko -->
+            </ul>
+        </li>
+        <li class="divider"></li>
+        <!-- /ko -->
+        <!-- ko ifnot: $data.isGroup -->
+        <li><a href="#" data-bind="text: name"></a></li>
+        <!-- /ko -->
+    </script>
+}
