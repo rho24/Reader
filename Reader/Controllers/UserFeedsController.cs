@@ -13,7 +13,6 @@ namespace Reader.Controllers
             _getUserFeeds = getUserFeeds;
         }
 
-        // GET api/feeds
         public IEnumerable<UserFeed> Get() {
             return _getUserFeeds.Execute();
         }

@@ -12,13 +12,13 @@
             <li><a class="btn" data-bind="click: getFeeds">Get Feeds</a></li>
             <li class="nav-header">Feeds</li>
             
-            <!-- ko template: { name: 'feed-template', foreach: feeds } --><!-- /ko -->
+            <!-- ko template: { name: feeditemTemplateChooser, foreach: feeds } --><!-- /ko -->
         </ul>
     </div>
     <div class="span9 well body fill">
         <!--Body content-->
         <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-header" databind="text: selectedFeed.name"></li>
+            <li class="nav-header" data-bind="text: selectedFeed.name"></li>
             <!-- ko foreach: selectedFeed.posts -->
             <li><a href="#" data-bind="text: name"></a></li>
             <!-- /ko -->
@@ -30,22 +30,50 @@
     <script type="text/javascript">
 
         ko.trackDeep = function(obj, propertyNames) {
+            if (obj === undefined)
+                return;
+
             if (obj instanceof Array) {
                 obj.forEach(function(item) {
                     ko.trackDeep(item, propertyNames);
                 });
             } else if (obj instanceof Object && !(obj instanceof Function)) {
                 (propertyNames || Object.getOwnPropertyNames(obj)).forEach(function(propertyName) {
-                    if (obj[propertyName] !== undefined)
-                        ko.trackDeep(obj[propertyName], propertyNames);
+                    ko.trackDeep(obj[propertyName], propertyNames);
                 });
                 ko.track(obj);
             }
         };
 
-        $(function () {
+        $(function() {
+
+            var feedItem = function(data) {
+                var that = this;
+
+                this.isGroup = data.isGroup;
+                this.name = data.name;
+                this.nodes = _.map(data.nodes, function(node) {
+                    return new feedItem(node);
+                });
+
+                this.selectFeed = function() {
+                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "Feed"})' + '/' + that.name, function(data) {
+                        ko.trackDeep(data);
+                        model.selectedFeed = data;
+                    });
+                };
+
+                this.isSelected = function() {
+                    return model.selectedFeed.name === that.name;
+                };
+
+                return this;
+            };
+
             var model = {
-                feeds: $.parseJSON('@Extensions.ToJson(Model.feeds)'),
+                feeds: _.map($.parseJSON('@Extensions.ToJson(Model.feeds)'), function (node) {
+                    return new feedItem(node);
+                }),
                 selectedFeed: {
                     name: 'Haacked',
                     posts: [
@@ -61,31 +89,35 @@
                         ko.trackDeep(data);
                         model.feeds = data;
                     });
+                },
+                feeditemTemplateChooser: function(node) {
+                    if (node.isGroup)
+                        return 'feedgroupitem-template';
+                    else
+                        return 'feeditem-template';
                 }
             };
+            
+            window.viewModel = model;
 
             ko.trackDeep(model);
 
             ko.applyBindings(model);
-
-            window.viewModel = model;
         });
 
     </script>
     
-    <script type="text/html" id="feed-template">
-        <!-- ko if: $data.isGroup -->
+    <script type="text/html" id="feeditem-template">
+        <li data-bind="css: { active: isSelected() }"><a href="#" data-bind="    text: name, click: selectFeed"></a></li>
+    </script>
+    
+    <script type="text/html" id="feedgroupitem-template">
         <li>
             <ul class="nav nav-list">
                 <li class="nav-header" data-bind="text: name"></li>
-                <!-- ko template: { name: 'feed-template', foreach: nodes } -->
-                <!-- /ko -->
+                <!-- ko template: { name: $root.feeditemTemplateChooser, foreach: nodes } --><!-- /ko -->
             </ul>
         </li>
         <li class="divider"></li>
-        <!-- /ko -->
-        <!-- ko ifnot: $data.isGroup -->
-        <li><a href="#" data-bind="text: name"></a></li>
-        <!-- /ko -->
     </script>
 }

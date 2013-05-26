@@ -50,6 +50,9 @@ namespace Reader
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                 "~/Scripts/knockout-*"));
+            
+            bundles.Add(new ScriptBundle("~/bundles/underscore").Include(
+                "~/Scripts/underscore.js"));
         }
     }
 }
