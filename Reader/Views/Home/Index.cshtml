@@ -1,4 +1,5 @@
-﻿@model dynamic
+﻿@using Reader.Infrastructure
+@model dynamic
 
 @{
     ViewBag.Title = "title";
@@ -42,20 +43,9 @@
             }
         };
 
-        $(function() {
+        $(function () {
             var model = {
-                feeds: [
-                    {
-                        isGroup: true,
-                        name: 'Forums',
-                        nodes: [{ name: 'Glimpse' },
-                            { name: 'Autofac' },
-                            { name: 'RavenDb' }]
-                    },
-                    { name: 'Hanselman' },
-                    { name: 'Haacked' },
-                    { name: 'ScottGu' }
-                ],
+                feeds: $.parseJSON('@Extensions.ToJson(Model.feeds)'),
                 selectedFeed: {
                     name: 'Haacked',
                     posts: [
