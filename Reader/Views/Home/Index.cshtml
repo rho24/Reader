@@ -8,6 +8,7 @@
     <div class="span3 well sidebar">
         <!--Sidebar content-->
         <ul class="nav nav-list">
+            <li><a class="btn" data-bind="click: getFeeds">Get Feeds</a></li>
             <li class="nav-header">Feeds</li>
             
             <!-- ko template: { name: 'feed-template', foreach: feeds } --><!-- /ko -->
@@ -28,20 +29,17 @@
     <script type="text/javascript">
 
         ko.trackDeep = function(obj, propertyNames) {
-            propertyNames = propertyNames || Object.getOwnPropertyNames(obj);
-
-            propertyNames.forEach(function(propertyName) {
-                if (obj[propertyName] !== undefined)
-                    ko.trackDeep(obj[propertyName], propertyNames);
-            });
-
             if (obj instanceof Array) {
-                obj.forEach(function (item) {
+                obj.forEach(function(item) {
                     ko.trackDeep(item, propertyNames);
                 });
-            }
-            else
+            } else if (obj instanceof Object && !(obj instanceof Function)) {
+                (propertyNames || Object.getOwnPropertyNames(obj)).forEach(function(propertyName) {
+                    if (obj[propertyName] !== undefined)
+                        ko.trackDeep(obj[propertyName], propertyNames);
+                });
                 ko.track(obj);
+            }
         };
 
         $(function() {
@@ -67,6 +65,12 @@
                         { name: 'Post 4 - This is a wonderful post' },
                         { name: 'Post 5 - This is a wonderful post' },
                         { name: 'Post 6 - This is a wonderful post' }]
+                },
+                getFeeds: function() {
+                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "UserFeeds"})', function(data) {
+                        ko.trackDeep(data);
+                        model.feeds = data;
+                    });
                 }
             };
 
