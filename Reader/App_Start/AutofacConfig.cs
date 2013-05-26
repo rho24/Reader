@@ -28,9 +28,10 @@ namespace Reader.App_Start
             container.ActivateGlimpse();
 
             // Set the WebApi dependency resolver.
-            var resolver = new AutofacWebApiDependencyResolver(container);
-            
-            configuration.DependencyResolver = resolver;
+            configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+
+            // Set the MVC dependency resolver.
+            System.Web.Mvc.DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }
     }
 }
