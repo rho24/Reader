@@ -34,7 +34,7 @@ namespace Reader.Controllers
 
                         var userFeeds = xml.XPathSelectElements("body/outline").Select(ToUserFeed).ToList();
 
-                        GetUserFeeds.UserFeeds = userFeeds;
+                        GetUserFeeds.UserFeeds = userFeeds.OrderByDescending(f => f.isGroup).ThenBy(f => f.name);
                     }
                 }
             }

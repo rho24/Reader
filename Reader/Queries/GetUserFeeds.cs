@@ -22,7 +22,7 @@ namespace Reader.Queries
         };
 
         public IEnumerable<UserFeed> Execute() {
-            return UserFeeds.OrderByDescending(f => f.isGroup).ThenBy(f => f.name);
+            return UserFeeds;
         }
     }
 }
