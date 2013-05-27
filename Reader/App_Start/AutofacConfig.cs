@@ -34,6 +34,8 @@ namespace Reader.App_Start
 
             container.ActivateGlimpse();
 
+            Glimpse.RavenDb.Profiler.AttachTo(container.Resolve<IDocumentStore>() as DocumentStore);
+
             // Set the WebApi dependency resolver.
             configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
