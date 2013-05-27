@@ -1,8 +1,11 @@
 ﻿using System.Reflection;
+using System.Web;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
+using Raven.Client;
+using Raven.Client.Document;
 
 namespace Reader.App_Start
 {
@@ -22,6 +25,10 @@ namespace Reader.App_Start
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).AsSelf();
+
+            builder.Register(c => new DocumentStore {ConnectionStringName = "Server"}.Initialize()).As<IDocumentStore>().SingleInstance();
+
+            builder.Register(c => c.Resolve<IDocumentStore>().OpenSession()).As<IDocumentSession>().InstancePerHttpRequest();
 
             var container = builder.Build();
 

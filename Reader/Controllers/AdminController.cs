@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Ionic.Zip;
+using Reader.Commands;
 using Reader.Models;
 using Reader.Queries;
 
@@ -12,6 +13,12 @@ namespace Reader.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly SaveUserFeeds _saveUserFeeds;
+
+        public AdminController(SaveUserFeeds saveUserFeeds) {
+            _saveUserFeeds = saveUserFeeds;
+        }
+
         public ActionResult Upload() {
             return View();
         }
@@ -32,9 +39,9 @@ namespace Reader.Controllers
                         var xml = XElement.Load(subsStream);
 
 
-                        var userFeeds = xml.XPathSelectElements("body/outline").Select(ToUserFeed).ToList();
-
-                        GetUserFeeds.UserFeeds = userFeeds.OrderByDescending(f => f.isGroup).ThenBy(f => f.name);
+                        var userFeeds = xml.XPathSelectElements("body/outline").Select(ToUserFeed).OrderByDescending(f => f.isGroup).ThenBy(f => f.name).ToList();
+                        
+                        _saveUserFeeds.Execute(userFeeds);
                     }
                 }
             }

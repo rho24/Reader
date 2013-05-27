@@ -1,23 +1,22 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Raven.Client;
 using Reader.Infrastructure;
 using Reader.Models;
 
-namespace Reader.Queries
+namespace Reader.Commands
 {
-    public class GetUserFeeds : IQuery<IEnumerable<UserFeed>>
+    public class SaveUserFeeds:ICommand<IEnumerable<UserFeed>>
     {
         private readonly IDocumentSession _session;
-        
-        public GetUserFeeds(IDocumentSession session) {
+
+        public SaveUserFeeds(IDocumentSession session) {
             _session = session;
         }
 
-        public IEnumerable<UserFeed> Execute() {
+        public void Execute(IEnumerable<UserFeed> input) {
             var userInfo = _session.Load<UserInfo>("UserInfos/guest");
-
-            return userInfo.userFeeds;
+            userInfo.userFeeds = input;
+            _session.SaveChanges();
         }
     }
 }
