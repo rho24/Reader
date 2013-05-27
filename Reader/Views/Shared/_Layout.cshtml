@@ -20,8 +20,8 @@
                     <a class="brand" href="#">Reader</a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
-                            <li class="active"><a href="#">Home</a></li>
-                            <li><a href="#about">About</a></li>
+                            <li class="@(ViewBag.Title == "Home" ? "active" : null)">@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li  class="@(ViewBag.Title == "Upload" ? "active" : null)">@Html.ActionLink("Upload", "Upload", "Admin")</li>
                             <li><a href="#contact">Contact</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->

@@ -2,7 +2,7 @@
 @model dynamic
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Home";
 }
 
 <div class="row-fluid fill">
@@ -27,6 +27,8 @@
 </div>
 
 @section scripts {
+    <script type="text/json" id="feeds-json">@Extensions.ToJson(Model.feeds)</script>
+
     <script type="text/javascript">
 
         ko.trackDeep = function(obj, propertyNames) {
@@ -71,7 +73,7 @@
             };
 
             var model = {
-                feeds: _.map($.parseJSON('@Extensions.ToJson(Model.feeds)'), function (node) {
+                feeds: _.map($.parseJSON($('#feeds-json').html()), function (node) {
                     return new feedItem(node);
                 }),
                 selectedFeed: {
