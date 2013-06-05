@@ -12,5 +12,9 @@ namespace Reader.Models
         public string name { get; set; }
 
         public IEnumerable<UserFeed> nodes { get; set; }
+
+        public string feedPostsId { get; set; }
+
+        public string url { get; set; }
     }
 }

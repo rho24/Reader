@@ -54,12 +54,13 @@
 
                 this.isGroup = data.isGroup;
                 this.name = data.name;
+                this.feedPostsId = data.feedPostsId;
                 this.nodes = _.map(data.nodes, function(node) {
                     return new feedItem(node);
                 });
 
                 this.selectFeed = function() {
-                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "Feed"})' + '/' + that.name, function(data) {
+                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "FeedPosts"})' + '/' + encodeURIComponent(that.feedPostsId), function (data) {
                         ko.trackDeep(data);
                         model.selectedFeed = data;
                     });

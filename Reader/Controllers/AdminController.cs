@@ -7,7 +7,6 @@ using System.Xml.XPath;
 using Ionic.Zip;
 using Reader.Commands;
 using Reader.Models;
-using Reader.Queries;
 
 namespace Reader.Controllers
 {
@@ -38,9 +37,8 @@ namespace Reader.Controllers
 
                         var xml = XElement.Load(subsStream);
 
-
                         var userFeeds = xml.XPathSelectElements("body/outline").Select(ToUserFeed).OrderByDescending(f => f.isGroup).ThenBy(f => f.name).ToList();
-                        
+
                         _saveUserFeeds.Execute(userFeeds);
                     }
                 }
@@ -50,7 +48,7 @@ namespace Reader.Controllers
         }
 
         private UserFeed ToUserFeed(XElement arg) {
-            return new UserFeed {name = arg.Attribute("title").Value, nodes = arg.Elements("outline").Select(ToUserFeed)};
+            return new UserFeed {name = arg.Attribute("title").Value, nodes = arg.Elements("outline").Select(ToUserFeed).ToList(), url = arg.Attribute("xmlUrl") != null ? arg.Attribute("xmlUrl").Value: null};
         }
     }
 }
