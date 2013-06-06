@@ -14,7 +14,7 @@ namespace Reader.Queries
         }
 
         public FeedPosts Execute(string input) {
-            return _session.Load<FeedPosts>(input);
+            return _session.Load<FeedPosts>("FeedPosts/" + input);
         }
     }
 }

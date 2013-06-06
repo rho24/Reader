@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -17,16 +18,24 @@ namespace Reader.Commands
         }
 
         public void Execute(string input) {
-            var feedPosts = _session.Load<FeedPosts>(input);
+            var feedPosts = _session.Load<FeedPosts>("FeedPosts/" + input);
 
             using (var web = new HttpClient()) {
                 var feedData = web.GetStringAsync(feedPosts.Url).Result;
 
                 var xml = XDocument.Parse(feedData);
 
-                var posts = xml.XPathSelectElements("").Select(e => new Post {name = e.Attribute("name").Value}).ToList();
+                var posts = xml.XPathSelectElements("rss/channel/item").Select(e => new Post {
+                    Data = e.ToString(),
+                    Name = e.TryElementAsString("title"),
+                    Url = e.TryElementAsString("link"),
+                    Description = e.TryElementAsString("description"),
+                    Author = e.TryElementAsString("author"),
+                    Guid = e.TryElementAsString("guid"),
+                    PublishDate = e.TryElementAsDateTime("pubDate")
+                }).ToList();
 
-                feedPosts.Posts.AddRange(posts.Where(newP => feedPosts.Posts.Any(p => p.name == newP.name)));
+                feedPosts.Posts.AddRange(posts.Where(newP => feedPosts.Posts.All(p => p.Name != newP.Name)));
 
                 _session.SaveChanges();
             }

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 using Reader.Models;
 
@@ -18,6 +20,21 @@ namespace Reader.Infrastructure
 
                 foreach (var innerFeed in userFeed.nodes.Flatify()) yield return innerFeed;
             }
+        }
+
+        public static string TryElementAsString(this XElement e, XName name) {
+            var element = e.Element(name);
+            return element != null ? element.Value : null;
+        }
+
+        public static DateTime? TryElementAsDateTime(this XElement e, XName name) {
+            var element = e.Element(name);
+
+            if (element == null)
+                return null;
+
+            DateTime d;
+            return DateTime.TryParse(element.Value, out d) ? (DateTime?) d : null;
         }
     }
 }

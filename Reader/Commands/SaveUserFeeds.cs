@@ -25,7 +25,7 @@ namespace Reader.Commands
             foreach (var userFeed in flatFeeds) {
                 var feedPosts = existingFeedPosts.SingleOrDefault(p => p.Url == userFeed.url);
                 if (feedPosts == null) {
-                    feedPosts = new FeedPosts {Id = userFeed.feedPostsId, CreatedDate = DateTime.UtcNow, Name = userFeed.name, Url = userFeed.url};
+                    feedPosts = new FeedPosts {Id = userFeed.feedPostsId, CreatedDate = DateTime.UtcNow, Name = userFeed.name, Url = userFeed.url, Posts = new List<Post>()};
                     _session.Store(feedPosts);
                 }
                 userFeed.feedPostsId = feedPosts.Id;
