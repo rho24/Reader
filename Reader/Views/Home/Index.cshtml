@@ -18,7 +18,12 @@
     <div class="span9 well body fill">
         <!--Body content-->
         <ul class="nav nav-tabs nav-stacked" data-bind="if: selectedFeed">
-            <li class="nav-header" data-bind="text: selectedFeed.Name"></li>
+            <li class="nav-header" >
+                <span>
+                    <span data-bind="text: selectedFeed.Name"></span>
+                    <a href="#" data-bind="click: selectedFeed.refresh">Refresh</a>
+                </span>
+            </li>
             <!-- ko foreach: selectedFeed.Posts -->
             <li><a data-bind="attr: { href: Url }, text: Name"></a></li>
             <!-- /ko -->
@@ -60,8 +65,11 @@
                 });
 
                 this.selectFeed = function() {
-                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "FeedPosts"})' + '/' + that.feedPostsId.split('/')[1], function (data) {
+                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "FeedPosts"})' + '/' + that.feedPostsId.split('/')[1], function(data) {
                         ko.trackDeep(data);
+                        data.refresh = function() {
+                            $.post('@Url.Action("Refresh", "Admin")');
+                        };
                         model.selectedFeed = data;
                     });
                 };
@@ -74,7 +82,7 @@
             };
 
             var model = {
-                feeds: _.map($.parseJSON($('#feeds-json').html()), function (node) {
+                feeds: _.map($.parseJSON($('#feeds-json').html()), function(node) {
                     return new feedItem(node);
                 }),
                 selectedFeed: null,
@@ -91,7 +99,7 @@
                         return 'feeditem-template';
                 }
             };
-            
+
             window.viewModel = model;
 
             ko.trackDeep(model);

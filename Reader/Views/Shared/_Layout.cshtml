@@ -30,7 +30,7 @@
         </div>
         
         
-        <div class="container-fluid viewport">
+        <div id="page-body" class="container-fluid viewport">
             @RenderBody()
         </div>
     
@@ -46,8 +46,11 @@
         @Scripts.Render("~/bundles/jquery")
         @Scripts.Render("~/bundles/underscore")
         @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/signalr")
+        <script type="text/javascript" src="~/signalr/hubs"></script>
         @Scripts.Render("~/bundles/site")
         @Scripts.Render("~/bundles/knockout")
+
         @RenderSection("scripts", required: false)
     </body>
 </html>

@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
-using System.Web;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
+using Microsoft.AspNet.SignalR;
 using Raven.Client;
 using Raven.Client.Document;
+using Reader.Infrastructure;
 
 namespace Reader.App_Start
 {
@@ -30,6 +31,8 @@ namespace Reader.App_Start
 
             builder.Register(c => c.Resolve<IDocumentStore>().OpenSession()).As<IDocumentSession>().InstancePerHttpRequest();
 
+            builder.RegisterType<NotificationHub>().SingleInstance();
+
             var container = builder.Build();
 
             container.ActivateGlimpse();
@@ -41,6 +44,8 @@ namespace Reader.App_Start
 
             // Set the MVC dependency resolver.
             System.Web.Mvc.DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+
+            GlobalHost.DependencyResolver = new Autofac.Integration.SignalR.AutofacDependencyResolver(container);
         }
     }
 }
