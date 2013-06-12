@@ -68,7 +68,7 @@
                     $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "FeedPosts"})' + '/' + that.feedPostsId.split('/')[1], function(data) {
                         ko.trackDeep(data);
                         data.refresh = function() {
-                            $.post('@Url.Action("Refresh", "Admin")');
+                            $.post('@Url.HttpRouteUrl("UserActions", new {action = "RefreshFeedPosts"})' + '/' + that.feedPostsId.split('/')[1]);
                         };
                         model.selectedFeed = data;
                     });

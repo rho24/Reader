@@ -6,7 +6,6 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Ionic.Zip;
 using Reader.Commands;
-using Reader.Infrastructure;
 using Reader.Models;
 
 namespace Reader.Controllers
@@ -14,11 +13,9 @@ namespace Reader.Controllers
     public class AdminController : Controller
     {
         private readonly SaveUserFeeds _saveUserFeeds;
-        private readonly NotificationHub _notification;
 
-        public AdminController(SaveUserFeeds saveUserFeeds, NotificationHub notification) {
+        public AdminController(SaveUserFeeds saveUserFeeds) {
             _saveUserFeeds = saveUserFeeds;
-            _notification = notification;
         }
 
         public ActionResult Upload() {
@@ -50,16 +47,12 @@ namespace Reader.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Refresh() {
-
-            _notification.Notify("Refreshed");
-
-            return Content("ok");
-        }
-
         private UserFeed ToUserFeed(XElement arg) {
-            return new UserFeed {name = arg.Attribute("title").Value, nodes = arg.Elements("outline").Select(ToUserFeed).ToList(), url = arg.Attribute("xmlUrl") != null ? arg.Attribute("xmlUrl").Value: null};
+            return new UserFeed {
+                name = arg.Attribute("title").Value,
+                nodes = arg.Elements("outline").Select(ToUserFeed).ToList(),
+                url = arg.Attribute("xmlUrl") != null ? arg.Attribute("xmlUrl").Value : null
+            };
         }
     }
 }
