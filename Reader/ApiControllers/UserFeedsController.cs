@@ -3,7 +3,7 @@ using System.Web.Http;
 using Reader.Models;
 using Reader.Queries;
 
-namespace Reader.Controllers
+namespace Reader.ApiControllers
 {
     public class UserFeedsController : ApiController
     {

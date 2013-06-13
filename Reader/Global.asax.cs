@@ -26,5 +26,9 @@ namespace Reader
 
             AutofacConfig.Register(GlobalConfiguration.Configuration);
         }
+
+        protected void Application_Error() {
+            
+        }
     }
 }

@@ -24,7 +24,7 @@
                     <a href="#" data-bind="click: selectedFeed.refresh">Refresh</a>
                 </span>
             </li>
-            <!-- ko foreach: selectedFeed.Posts -->
+            <!-- ko foreach: selectedFeed.Posts, beforeRemove: hidePost, afterAdd: showPost -->
             <li><a data-bind="attr: { href: Url }, text: Name"></a></li>
             <!-- /ko -->
         </ul>
@@ -52,6 +52,13 @@
             }
         };
 
+        Array.prototype.pushMany = function(args) {
+            this.push.apply(this, args);
+        };
+
+        var notifier = $.connection.notificationHub;
+
+
         $(function() {
 
             var feedItem = function(data) {
@@ -65,12 +72,13 @@
                 });
 
                 this.selectFeed = function() {
-                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "FeedPosts"})' + '/' + that.feedPostsId.split('/')[1], function(data) {
+                    $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "Feeds"})' + '/' + that.feedPostsId.split('/')[1], function(data) {
                         ko.trackDeep(data);
                         data.refresh = function() {
                             $.post('@Url.HttpRouteUrl("UserActions", new {action = "RefreshFeedPosts"})' + '/' + that.feedPostsId.split('/')[1]);
                         };
                         model.selectedFeed = data;
+                        model.selectedFeed.refresh();
                     });
                 };
 
@@ -97,12 +105,42 @@
                         return 'feedgroupitem-template';
                     else
                         return 'feeditem-template';
+                },
+                hidePost: function(e) {
+                    $(e).slideUp();
+                },
+                showPost: function(e) {
+                    $(e).hide().slideDown();
                 }
             };
+
+            notifier.client.FeedPostsUpdated = function(message) {
+                if (message.Id != model.selectedFeed.Id.split('/')[1])
+                    return;
+
+                $.get('@Url.HttpRouteUrl("DefaultApi", new {controller = "Posts"})' + '/' + model.selectedFeed.Id.split('/')[1], function(data) {
+                    ko.trackDeep(data);
+                    model.selectedFeed.Posts.removeAll();
+                    model.selectedFeed.Posts.pushMany(data);
+                });
+            };
+
 
             window.viewModel = model;
 
             ko.trackDeep(model);
+
+            // Here's a custom Knockout binding that makes elements shown/hidden via jQuery's fadeIn()/fadeOut() methods
+            // Could be stored in a separate utility library
+            ko.bindingHandlers.slideSwitch = {
+                update: function(element, valueAccessor) {
+                    // Whenever the value subsequently changes, slowly fade the element in or out
+                    var value = valueAccessor();
+
+
+                    ko.utils.unwrapObservable(value) ? $(element).fadeIn() : $(element).fadeOut();
+                }
+            };
 
             ko.applyBindings(model);
         });
